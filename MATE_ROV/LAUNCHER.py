@@ -1,6 +1,6 @@
 import threading
 import HUD
-import INPUTCONTROLLER
+import InputExecutable
 from flask import Flask
 
 webApp = HUD.HUDweb
