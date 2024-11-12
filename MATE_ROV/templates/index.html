@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUD Layout</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000; /* Black background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        .vision-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background-color: #222; /* Dark gray background for vision box */
+            color: white; /* Text color */
+        }
+
+        .label {
+            font-size: 48px; /* Large font size for "Vision" label */
+            font-weight: bold; /* Bold text */
+        }
+
+        .info-box {
+            position: absolute; /* Positioning info boxes */
+            background-color: rgba(136, 10, 10, 0.378); /* Semi-transparent black */
+            color: white; /* White text */
+            padding: 10px;
+            border-radius: 5px; /* Rounded corners */
+            font-size: 35px; /* Font size for info boxes */
+        }
+
+        #speed {
+            top: 20px; /* Position from the top */
+            right: 20px; /* Position from the right */
+        }
+
+        #depth {
+            top: 90px; /* Position from the top */
+            right: 20px; /* Position from the right */
+        }
+
+        #roll {
+            top: 170px; /* Position from the top */
+            right: 20px; /* Position from the right */
+        }
+    </style>
+</head>
+<body>
+    <div class="vision-box">
+        <div class="info-box" id="speed">Speed</div>
+        <div class="info-box" id="depth">Depth</div>
+        <div class="info-box" id="roll">Roll</div>
+        <div class="label">Vision</div> <!-- Central label -->
+    </div>
+</body>
+</html>
