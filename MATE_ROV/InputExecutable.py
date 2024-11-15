@@ -1,6 +1,4 @@
 import pygame
-import sys
-import time
 
 pygame.init()
 pygame.joystick.init()
@@ -40,25 +38,31 @@ DebugController(driver)
 DebugController(operator)
 
 # #Driver Inputs
-# if driver:
-#     axis_X = driver.get_axis(0)
-#     axis_Z = driver.get_axis(1)
-#     axis_Yaw = driver.get_axis(2)
-#     descend = driver.get_button(0)
-#     ascend = driver.get_button(2)
+axis_X = 0
+axis_Z = 0
+axis_Yaw = 0
+#for altitude
+altID = 0
+# -1, 0, 1
+#  D, N, A
 
 def ToggleStop():
     # wasStopped = False
     global stopped
-    stopped = not stopped             
-
+    stopped = not stopped    
+    
+def AltitudeControl():
+    if descend:
+        ascend = False
+    elif ascend:
+        descend = False
 #Main function
 def ControllerExecution():
+    global axis_X, axis_Z, axis_Yaw
     screen = pygame.display.set_mode((1, 1))
     run = True
     while run:
         for event in pygame.event.get():
-            #disable robot
             if event.type == pygame.KEYDOWN:
                 print(event.key)
                 #   EMERGENCY STOP
@@ -73,10 +77,11 @@ def ControllerExecution():
                     print(stopped)
 
         if stopped:
-            print("Code stopped")
+            continue
         if not stopped:
             if event.type in [pygame.JOYBUTTONDOWN, pygame.JOYBUTTONUP, pygame.JOYAXISMOTION, pygame.JOYHATMOTION]:
                 joystick_id = event.instance_id
+                print(f"Joystick Event: {event}")
 
                 if joystick_id == driver.get_instance_id():
                     if event.type == pygame.JOYAXISMOTION:
@@ -86,16 +91,14 @@ def ControllerExecution():
                             elif event.axis == 1:
                                 axis_Z = event.value
                             elif event.axis == 2:
-                                Yaw = event.value
-                                
+                                axis_Yaw = event.value
+                                                        
                 if event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 0:
-                        print("Descending")
+                        altID = -1
                     elif event.button == 2:
-                        print("Ascending")
+                        altID = 1
+                    else: altID = 0
                            
-    pygame.quit()
-
-ControllerExecution()        
-
+    pygame.quit()    
 

@@ -10,11 +10,11 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #000; /* Black background */
+            background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden; /* Prevent scrolling */
+            overflow: hidden;
         }
 
         .vision-box {
@@ -23,47 +23,247 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            background-color: #222; /* Dark gray background for vision box */
-            color: white; /* Text color */
+            position: fixed;
+            background-color: #222;
+            color: white;
         }
 
+        #videoStream {
+            width: 100%;
+            height: auto; /* Keeps aspect ratio */
+            object-fit: cover;
+        }
         .label {
-            font-size: 48px; /* Large font size for "Vision" label */
-            font-weight: bold; /* Bold text */
+            font-size: 48px;
+            font-weight: bold;
         }
 
         .info-box {
-            position: absolute; /* Positioning info boxes */
-            background-color: rgba(136, 10, 10, 0.378); /* Semi-transparent black */
-            color: white; /* White text */
+            position: absolute;
+            background-color: rgba(136, 10, 10, 0.378);
+            color: white;
             padding: 10px;
-            border-radius: 5px; /* Rounded corners */
-            font-size: 35px; /* Font size for info boxes */
+            border-radius: 5px;
+            font-size: 35px;
         }
 
-        #speed {
-            top: 20px; /* Position from the top */
-            right: 20px; /* Position from the right */
+        #speed { top: 20px; right: 20px; }
+        #depth { top: 90px; right: 20px; }
+        #roll { top: 170px; right: 20px; }
+
+        .controller-inputs {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            max-width: 300px;
         }
 
-        #depth {
-            top: 90px; /* Position from the top */
-            right: 20px; /* Position from the right */
+        .controller-inputs div { margin-bottom: 15px; }
+
+        .controller-inputs label {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        #roll {
-            top: 170px; /* Position from the top */
-            right: 20px; /* Position from the right */
+        .controller-inputs .input-value {
+            font-size: 16px;
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            border-radius: 5px;
+        }
+
+        .stopped-indicator {
+            position: fixed;
+            top: 10px;
+            left: 500x;
+            width: 200px;
+            height: 50px;
+            border-radius: 75%;
+            background-color: red;
+            transition: background-color 0.3s;
+        }
+
+        /* Menu Button and Side Panel Styling */
+        .menu-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .menu-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 30px;
+        }
+
+        .menu-icon span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: #fff;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .side-panel {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            height: 100vh;
+            width: 210px;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: left 0.3s ease;
+            z-index: 9;
+            padding: 20px;
+        }
+
+        .side-panel ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .side-panel ul li {
+            margin: 20px 0;
+        }
+
+        .side-panel ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        #menu-toggle:checked ~ .side-panel .close-btn {
+            display: block; /* Show close button only when menu is open */
+        }
+
+        #menu-toggle {
+            display: none;
+        }
+
+        #menu-toggle:checked ~ .side-panel {
+            left: 0;
+        }
+
+        #menu-toggle:checked + .menu-icon span:nth-child(1) {
+            transform: rotate(45deg) translateY(8px);
+        }
+
+        #menu-toggle:checked + .menu-icon span:nth-child(2) {
+            opacity: 0;
+        }
+
+        #menu-toggle:checked + .menu-icon span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-8px);
         }
     </style>
 </head>
 <body>
+    <!-- Menu Button and Side Panel -->
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="menu-btn">
+        <div class="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </label>
+
+    <div class="side-panel">
+        <ul>
+            <li><a href="vision.html" target="_blank">Vision</a></li>
+            <li><a href="inputs.html" target="_blank">Inputs</a></li>
+            <li><a href="settings.html" target="_blank">Settings</a></li>
+            <li><a href="help.html" target="_blank">Help</a></li>
+        </ul>        
+    </div>
+
+    <!-- HUD Layout -->
     <div class="vision-box">
+        <img id="videoStream" alt="Video Stream" style="width: 100%; height: 100%; object-fit: cover;">
         <div class="info-box" id="speed">Speed</div>
         <div class="info-box" id="depth">Depth</div>
         <div class="info-box" id="roll">Roll</div>
-        <div class="label">Vision</div> <!-- Central label -->
+        <div class="label">Vision</div>
     </div>
+
+    <div class="controller-inputs">
+        <div>
+            <label for="axisX">Joystick X-Axis:</label>
+            <div id="axisX" class="input-value">0</div>
+        </div>
+        <div>
+            <label for="axisYaw">Joystick Yaw-Axis:</label>
+            <div id="axisYaw" class="input-value">0</div>
+        </div>
+        <div>
+            <label for="axisZ">Joystick Z-Axis:</label>
+            <div id="axisZ" class="input-value">0</div>
+        </div>
+        <div>
+            <label for="altitude">Altitude State</label>
+            <div id="alt" class="input-value">Neutral</div>
+        </div>
+    </div>
+
+    <div class="stopped-indicator" id="stoppedIndicator"></div>
+
+    <!-- Existing JavaScript for Socket Communication -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io.connect('http://127.0.0.1:5000');  
+        const videoSocket = io.connect('http://192.168.2.2:5000');
+        //, {transports: ['websockets']}
+
+        videoSocket.on('video_feed', function(data) {
+            const img = document.getElementById("videoStream");
+            img.src = "data:image/jpeg;base64," + data.image;
+            });
+
+        socket.on('controllerData', function(data) {    
+            if (data.axis_X !== undefined) {
+                document.getElementById('axisX').textContent = data.axis_X.toFixed(2);
+            }
+            if (data.axis_Yaw !== undefined) {
+                document.getElementById('axisYaw').textContent = data.axis_Yaw.toFixed(2);
+            }
+            if (data.axis_Z !== undefined) {
+                document.getElementById('axisZ').textContent = data.axis_Z.toFixed(2);
+            }
+        });
+
+        socket.on('ToggleState', function(data){
+            const signal = document.getElementById('stoppedIndicator');
+            signal.style.backgroundColor = data.stopped ? 'red' : 'green';
+        });
+
+        socket.on('AltitudeState', function(data){
+            const altitudeDisplay = document.getElementById('alt');
+            let altitudeState = "Neutral";  
+            
+            if(data.altID === 1) {
+                altitudeState = "Gain";
+            } else if(data.altID === -1) {
+                altitudeState = "Loss";
+            }
+
+            altitudeDisplay.textContent = altitudeState;
+        });
+    </script>
 </body>
 </html>
