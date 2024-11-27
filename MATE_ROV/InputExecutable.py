@@ -1,4 +1,7 @@
 import pygame
+from flask_socketio import SocketIO
+from flask_cors import CORS
+import LAUNCHER
 
 pygame.init()
 pygame.joystick.init()
@@ -58,7 +61,7 @@ def AltitudeControl():
         descend = False
 #Main function
 def ControllerExecution():
-    global axis_X, axis_Z, axis_Yaw
+    axis_X = 0, axis_Z = 0, axis_Yaw = 0
     screen = pygame.display.set_mode((1, 1))
     run = True
     while run:
@@ -75,6 +78,15 @@ def ControllerExecution():
                 if event.key == pygame.K_RSHIFT:
                     ToggleStop()
                     print(stopped)
+
+                #For Joe Cameras
+                if event.key == pygame.K_o:
+                    LAUNCHER.controllerSocket.emit('Cycle Next', {'key': pygame.key.name(event.key)})
+                    print('Next Camera')
+                elif event.key == pygame.K_i:
+                    print('Previous Camera')
+                    LAUNCHER.controllerSocket.emit('Cycle Previous', {'key': pygame.key.name(event.key)})
+
 
         if stopped:
             continue
