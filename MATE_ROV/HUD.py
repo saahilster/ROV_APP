@@ -7,6 +7,6 @@ ControlApp = Flask(__name__ )
 def home():
     return render_template("index.html")
 
-@ControlApp.route("/C")
-def homeTwo():
-    return render_template("index.html")
+# @ControlApp.route("/C")
+# def homeTwo():
+#     return render_template("index.html")

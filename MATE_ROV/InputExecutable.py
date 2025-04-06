@@ -1,13 +1,12 @@
 import pygame
 from flask_socketio import SocketIO
 from flask_cors import CORS
-import LAUNCHER
-
+import time
 pygame.init()
 pygame.joystick.init()
 stopped = False
 controllers = {}
-
+cameras = {}
 
 def ControllerCreator(controllerID, controllerName):
     if pygame.joystick.get_count()>0:
@@ -40,14 +39,21 @@ operator = ControllerCreator(0, "operatorID")
 DebugController(driver)
 DebugController(operator)
 
+#For camera
+inputCamera = 0
+
 # #Driver Inputs
-axis_X = 0
-axis_Z = 0
-axis_Yaw = 0
-#for altitude
-altID = 0
-# -1, 0, 1
-#  D, N, A
+axis_X = 0.0
+axis_Z = 0.0
+axis_Yaw = 0.0
+axis_Y = 0.0
+
+#servo test binds
+firstGear = False
+secondGear = False
+thirdGear = False
+neutral = False
+arming = False
 
 def ToggleStop():
     # wasStopped = False
@@ -61,13 +67,19 @@ def AltitudeControl():
         descend = False
 #Main function
 def ControllerExecution():
-    axis_X = 0, axis_Z = 0, axis_Yaw = 0
+    global inputCamera
+    
+    def CameraSwitchIndex(val):
+        print(f"key int: {val}")
+        return val
+    
+    global axis_X, axis_Yaw, axis_Z, axis_Y
+    global neutral, firstGear, secondGear, thirdGear, arming
     screen = pygame.display.set_mode((1, 1))
     run = True
     while run:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                print(event.key)
                 #   EMERGENCY STOP
                 if event.key == pygame.K_DELETE:
                     run = False
@@ -79,22 +91,52 @@ def ControllerExecution():
                     ToggleStop()
                     print(stopped)
 
-                #For Joe Cameras
+                #For Cameras
                 if event.key == pygame.K_o:
-                    LAUNCHER.controllerSocket.emit('Cycle Next', {'key': pygame.key.name(event.key)})
-                    print('Next Camera')
+                   inputCamera = CameraSwitchIndex(event.key)
+                    
                 elif event.key == pygame.K_i:
-                    print('Previous Camera')
-                    LAUNCHER.controllerSocket.emit('Cycle Previous', {'key': pygame.key.name(event.key)})
-
+                   inputCamera = CameraSwitchIndex(event.key)            
 
         if stopped:
             continue
         if not stopped:
             if event.type in [pygame.JOYBUTTONDOWN, pygame.JOYBUTTONUP, pygame.JOYAXISMOTION, pygame.JOYHATMOTION]:
                 joystick_id = event.instance_id
-                print(f"Joystick Event: {event}")
-
+                # print(f"Joystick Event: {event}")
+                
+                time.sleep(0.1)
+                
+                if joystick_id == driver.get_instance_id():
+                    
+                    if event.type == pygame.JOYHATMOTION:
+                        print(f"DPAD: {event}")
+                    #press events
+                    if event.type == pygame.JOYBUTTONDOWN:
+                        if event.button == 6:
+                            neutral = True
+                        elif event.button == 7:
+                            firstGear = True
+                        elif event.button == 8:
+                            secondGear = True
+                        elif event.button == 9:
+                            thirdGear = True
+                        elif event.button == 10:
+                            arming = True
+                    #release events
+                    if event.type == pygame.JOYBUTTONUP:
+                         if event.button == 6:
+                            neutral = False
+                         elif event.button == 7:
+                            firstGear = False
+                         elif event.button == 8:
+                            secondGear = False
+                         elif event.button == 9:
+                            thirdGear = False   
+                         elif event.button == 10:
+                             arming = False
+                    
+                
                 if joystick_id == driver.get_instance_id():
                     if event.type == pygame.JOYAXISMOTION:
                             #Axis Commands
@@ -104,13 +146,8 @@ def ControllerExecution():
                                 axis_Z = event.value
                             elif event.axis == 2:
                                 axis_Yaw = event.value
-                                                        
-                if event.type == pygame.JOYBUTTONDOWN:
-                    if event.button == 0:
-                        altID = -1
-                    elif event.button == 2:
-                        altID = 1
-                    else: altID = 0
+                            elif event.axis == 3:
+                                axis_Y = event.value
                            
     pygame.quit()    
 
