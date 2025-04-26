@@ -42,10 +42,15 @@ def emit_controller_data():
             'first': InputExecutable.firstGear,
             'second': InputExecutable.secondGear,
             'third': InputExecutable.thirdGear,
-            'arm': InputExecutable.arming
+            'arm': InputExecutable.arming,
+            'up': InputExecutable.up,
+            'down': InputExecutable.down,
+            'left': InputExecutable.left,
+            'right': InputExecutable.right,
+            'A' : InputExecutable.arm
         })
         time.sleep(0.1)
-
+         
 # Thread function to emit state data
 # def emit_state_data():
 #     while True:
@@ -70,7 +75,6 @@ def RunApp(app, socketio):
     socketio.run(app, host='0.0.0.0', port=5000)
 
 if __name__ == '__main__':
-    print(InputExecutable.axis_Z)
 
     # Start the controller execution thread
     ThreadCreator(ControllerExecution)
@@ -86,4 +90,4 @@ if __name__ == '__main__':
     flaskThread.start()
 
     while True:
-        time.sleep(0.5)
+        time.sleep(0.25)

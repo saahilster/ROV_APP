@@ -55,10 +55,19 @@ thirdGear = False
 neutral = False
 arming = False
 
+#camera direction
+up = False
+down = False
+left = False
+right = False
+
+#start arming
+arm = False
+
 def ToggleStop():
     # wasStopped = False
     global stopped
-    stopped = not stopped    
+    stopped = not stopped   
     
 def AltitudeControl():
     if descend:
@@ -74,7 +83,8 @@ def ControllerExecution():
         return val
     
     global axis_X, axis_Yaw, axis_Z, axis_Y
-    global neutral, firstGear, secondGear, thirdGear, arming
+    global neutral, firstGear, secondGear, thirdGear, arming, arm
+    global up, down, left, right
     screen = pygame.display.set_mode((1, 1))
     run = True
     while run:
@@ -90,27 +100,59 @@ def ControllerExecution():
                 if event.key == pygame.K_RSHIFT:
                     ToggleStop()
                     print(stopped)
+                    
+                #start arming
+                if event.key == pygame.K_s:
+                    arm = True
 
                 #For Cameras
                 if event.key == pygame.K_o:
                    inputCamera = CameraSwitchIndex(event.key)
                     
                 elif event.key == pygame.K_i:
-                   inputCamera = CameraSwitchIndex(event.key)            
+                   inputCamera = CameraSwitchIndex(event.key)    
+                   
+                if event.key == pygame.K_UP:
+                    up = True
+                    print('hit')
+                elif event.key == pygame.K_DOWN:
+                    down = True
+                    print('hit')
+                elif event.key == pygame.K_LEFT:
+                    left = True
+                    print('hit')
+                elif event.key == pygame.K_RIGHT:
+                    print('hit')
+                    right = True
+            
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP:
+                    print('release')
+                    up = False
+                elif event.key == pygame.K_DOWN:
+                    print('release')
+                    down = False
+                elif event.key == pygame.K_LEFT:
+                    print('release')
+                    left = False
+                elif event.key == pygame.K_RIGHT:
+                    print('release')
+                    right = False   
+                elif event.key == pygame.K_s:
+                    arm = False
+            
+                         
 
         if stopped:
             continue
         if not stopped:
             if event.type in [pygame.JOYBUTTONDOWN, pygame.JOYBUTTONUP, pygame.JOYAXISMOTION, pygame.JOYHATMOTION]:
-                joystick_id = event.instance_id
-                # print(f"Joystick Event: {event}")
-                
-                time.sleep(0.1)
-                
-                if joystick_id == driver.get_instance_id():
-                    
-                    if event.type == pygame.JOYHATMOTION:
-                        print(f"DPAD: {event}")
+                joystick_id = event.instance_id                
+                global gX
+                global gY  
+                                              
+                #DRIVER INPUTS                  
+                if joystick_id == driver.get_instance_id():  
                     #press events
                     if event.type == pygame.JOYBUTTONDOWN:
                         if event.button == 6:
@@ -134,9 +176,12 @@ def ControllerExecution():
                          elif event.button == 9:
                             thirdGear = False   
                          elif event.button == 10:
-                             arming = False
-                    
-                
+                             arming = False  
+                             
+                    # if event.type == pygame.JOYHATMOTION:
+                    #     (gX, gY) = event.value
+                    #     print((gX, gY))                           
+                                                 
                 if joystick_id == driver.get_instance_id():
                     if event.type == pygame.JOYAXISMOTION:
                             #Axis Commands
@@ -148,6 +193,6 @@ def ControllerExecution():
                                 axis_Yaw = event.value
                             elif event.axis == 3:
                                 axis_Y = event.value
-                           
+                                            
     pygame.quit()    
 
