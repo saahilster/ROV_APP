@@ -72,7 +72,7 @@ def ThreadCreator(function):
 
 # Function to start the Flask-SocketIO server
 def RunApp(app, socketio):
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='192.168.2.1', port=5000)
 
 if __name__ == '__main__':
 
